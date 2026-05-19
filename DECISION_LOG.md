@@ -1,66 +1,39 @@
-# Decision Log
+# Technical Decision & Troubleshooting Log
 
-## [20:15] - analyze the problem
-
-## Read the problem then realized everything was so new to me
-
-How could I solve this problem without knowing anything?
-First option came up: Asking AI (Gemini & TRAE SOLO) to analyze and code the requirement then sketch steps to solve the problem.
+Tài liệu này ghi nhận lại các vấn đề kỹ thuật phát sinh trong quá trình xây dựng hệ thống **Product Showcase**, cùng quy trình phối hợp xử lý lỗi thực tế giữa bản thân và các công cụ trợ lý AI (Gemini / Trae) để đưa dự án về trạng thái vận hành ổn định.
 
 ---
 
-I asked both GEMINI and TRAE SOLO with a prompt1:
-[Uploading the "Product Frontend - Technical Assessment GI Summer 2026" file] "Cho mình bước từng bước làm step by step để hoàn thành yêu cầu này"
+## 1. Xử lý xung đột môi trường CLI khi thiết lập Tailwind CSS
 
-The responses:
-[GEMINI's response1 for prompt1 is ./AI_prompt/GEMINI_response1.md]
-[TRAE SOLO's response1 for prompt1 is ./AI_prompt/TRAE_response1.md]
-
-I chose to do following Gemini cause I compared the two reponses, I realized `the first` step that `TRAE` told me to do (MOCK APIs) was similar to `the second` step that `GEMINI` told me to do (THIẾT KẾ MOCK API VỚI MOCKOON), which means GEMINI gave a more detailed instruction. Additionally, I did also know that I needed to create a project folder before doing anything.
-=> I chose to do following GEMINI - creating folder
+- **Tình huống:** Khi khởi tạo cấu hình giao diện tại thư mục Frontend bằng lệnh `npx tailwindcss init -p`, hệ thống CLI của Node trả về mã lỗi xung đột `npm error could not determine executable to run` và không thể tự động tạo file.
+- **Prompt:** Copy lỗi từ terminal và gửi prompt tham vấn **Gemini**.
+- **Kết quả AI trả về:** Chủ động khởi tạo thủ công hai tệp cấu hình bằng tay thay vì phụ thuộc vào CLI tự động.
+- **Kết quả:** Đã tạo tay tệp `tailwind.config.js` và `postcss.config.js` tại thư mục định tuyến, nạp cấu hình quét phân vùng content cấu trúc cho thư mục `src/`. Trình biên dịch Vite sau đó đã nhận diện chính xác các class và dọn sạch lỗi biên dịch.
 
 ---
 
-Finshing step 1, I proceeded to step 2, I asked GEMINI to explain more details about step 2 - THIẾT KẾ MOCK API VỚI MOCKOON, because I had never worked with MOCKOON before.
+## 2. Giải quyết lỗi quy tắc ESLint kiểm soát dữ liệu (`no-explicit-any`)
 
-GEMINI prompt2:
-hướng dẫn làm bước 2 một cách chi tiết
-
-The response:
-[GEMINI's response2 for prompt2 is ./AI_prompt/GEMINI_response2.md]
-
-Then I remembered the mockoon-data.json that TRAE gave me in prompt1, and TRAE was created specially for programming so I was back to TRAE, copied the mockoon-data.json, pasted it to GEMINI and told it to check the code.
+- **Tình huống:** Tại khối xử lý ngoại lệ `catch (err: any)` của luồng Đăng nhập (`Login.tsx`) và Chi tiết sản phẩm (`ProductDetail.tsx`), bộ quét code nghiêm ngặt của dự án (ESLint) báo lỗi đỏ liên tục vì vi phạm quy chuẩn cấm sử dụng kiểu dữ liệu `any` tường minh (`eslint(@typescript-eslint/no-explicit-any)`).
+- **Prompt:** Chụp màn hình dòng code bị gạch đỏ kèm lỗi linter gửi prompt tham vấn **Gemini / Trae**.
+- **Kết quả AI trả về:** Thay đổi kiểu dữ liệu của biến ngoại lệ từ `any` sang `unknown`, sau đó áp dụng cú pháp ép kiểu nội dòng (inline type casting) cục bộ để thỏa mãn linter mà không làm hỏng logic cũ.
+- **Kết quả:** Chỉnh sửa cấu trúc thành `catch (err: unknown)` và áp dụng đoạn mã ép kiểu: `(err as { response?: { data?: { message?: string } } }).response?.data?.message`. Toàn bộ các file sạch bóng lỗi đỏ trên IDE và vượt qua vòng quét kiểm thử.
 
 ---
 
-The code was really good, however, I want to export the mockoon-data.json by myself, by using MOCKOON, so I told GEMINI to show me step by step how to create the mockoon-data.json from MOCKOON. It told me to create routes, after finishing creating all the routes, MOCKOON created the mockoon-data.json automatically, I just came to the folder where the mockoon-data.json was stored to get it. Then I got this:
+## 3. Tối ưu hóa hiệu năng bộ lọc và dọn sạch cảnh báo React Hooks
 
-[images of the results is in ./Result_images/MOCKOON]
-
-Step 2 - done, moving to step 3 (KHỞI TẠO VÀ XÂY DỰNG FRONTEND (REACT / VITE))
-
----
-
-I asked GEMINI to check the mockoon-data.json, then, it told me to keep doing with step 3.
-
-GEMINI prompt3:
-[Uploading the code form mockoon-data.json] check the code.
-
-The response:
-[GEMINI's response3 for prompt3 is ./AI_prompt/GEMINI_response3.md]
+- **Tình huống:** Khi xây dựng màn hình Danh sách sản phẩm (`ProductList.tsx`), việc đặt logic lọc 120 sản phẩm bên trong hook `useEffect` ban đầu dẫn đến cảnh báo gạch vàng `react-hooks/exhaustive-deps` trên IDE do thiếu mảng phụ thuộc, nhưng nếu thêm vào theo gợi ý thông thường thì ứng dụng sẽ bị lặp vô hạn (Infinite Loop).
+- **Prompt:** Gửi file code `ProductList.tsx` lên **Gemini** để tham vấn cách dọn sạch cảnh báo vàng mà không làm crash ứng dụng.
+- **Kết quả AI trả về:** Gỡ bỏ hoàn toàn logic lọc ra khỏi `useEffect` và chuyển dịch cấu trúc tính toán sang sử dụng hook **`useMemo`** để quản lý mảng dữ liệu đầu ra một cách độc lập.
+- **Kết quả:** Áp dụng cấu trúc block `useMemo(() => { ... }, [searchQuery, filters, products])` thay thế cho logic cũ. Ứng dụng dọn sạch hoàn toàn các dòng gạch chân cảnh báo trên IDE, đồng thời tối ưu hóa tốc độ phản hồi của thanh tìm kiếm và bộ lọc đối với tập dữ liệu lớn.
 
 ---
 
-when I run the terminal commands in GEMINI_response3, I encountered 1 problem while running "npx tailwindcss init -p", due to some conflicts:
+## 4. Khắc phục sự cố cô lập mạng Orchestration trên Docker macOS
 
-"tranminhtuong@Tran-Minh-Tuongs-MacBook-Pro frontend % npx tailwindcss init -p
-npm error could not determine executable to run
-npm error A complete log of this run can be found in: /Users/tranminhtuong/.npm/\_logs/2026-05-18T17_04_55_488Z-debug-0.log"
-
-Therefore, I created `tailwind.config.js` and `postcss.config.js` manually following GEMINI's instruction.
-
-GEMINI prompt4:
-[Uploading the error] fix.
-
-The response:
-[GEMINI's response4 for prompt4 is ./AI_prompt/GEMINI_response4.md]
+- **Tình huống:** Kích hoạt cụm Service thông qua lệnh `docker compose up --build`, hệ thống báo các container đều chạy thành công (`started`) nhưng trình duyệt Safari trên máy Mac hoàn toàn bị chặn và báo lỗi mất kết nối `Can't Connect to the Server` tại địa chỉ `http://localhost:5173`.
+- **Prompt:** Copy toàn bộ log vận hành ở terminal kết hợp chụp màn hình lỗi trình duyệt gửi cho **Gemini** để gỡ lỗi.
+- **Kết quả AI trả về:** Phát hiện thuộc tính ngữ cảnh `context` build trong file `docker-compose.yml` đang bị trỏ sai vị trí phân cấp thư mục gốc, dẫn đến việc container máy chủ Nginx bị mất tệp cấu hình mạng `nginx.conf`. Chỉ dẫn hạ container, sửa lại đường dẫn và ép build lại từ đầu bằng cờ xóa bộ nhớ đệm.
+- **Kết quả:** Thực hiện theo chỉ dẫn: Hạ container bằng `docker compose down`, sửa trường cấu hình thành `context: ./frontend`, và kích hoạt lại bằng lệnh `docker compose build --no-cache && docker compose up`. Trình duyệt Safari sau đó đã kết nối mượt mà đến giao diện Front-end và gọi dữ liệu API trơn tru từ container Mockoon CLI ngầm (port 3001).

@@ -1,12 +1,14 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  # Dịch vụ ứng dụng React Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: frontend_container
     ports:
-      - "3000:80"
+      - "5173:80"
     depends_on:
       - mock-api
     environment:
