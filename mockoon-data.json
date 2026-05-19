@@ -1,0 +1,199 @@
+{
+  "uuid": "2e643024-0d3b-4eaa-9a4f-29ce68876557",
+  "lastMigration": 33,
+  "name": "Mockoon data",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "dc1a71bb-f66a-4ecc-86bd-9c59a9648b9e",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/login",
+      "responses": [
+        {
+          "uuid": "ed9444a0-227e-4eca-b156-08b06c9b5ea5",
+          "body": "{\n  \"accessToken\": \"...\",\n  \"refreshToken\": \"...\",\n  \"user\": {\n    \"username\": \"{{body 'username'}}\",\n    \"avatar\": \"https://api.dicebear.com/7.x/initials/svg?seed={{body 'username'}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "039de933-fb1a-4d7a-96f2-3517d1a6849e",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/logout",
+      "responses": [
+        {
+          "uuid": "c5111d69-a2cf-4660-bf90-eb5ff15ad965",
+          "body": "{\n  \"success\": true\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "3163aaef-0d87-4a52-8688-7f82c46fdd99",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/product",
+      "responses": [
+        {
+          "uuid": "0542bb14-354c-4b56-b486-d890805c2548",
+          "body": "[\n  {{#repeat 120}}\n  {\n    \"id\": {{@index}},\n    \"name\": \"{{faker 'commerce.productName'}} #{{@index}}\",\n    \"image\": \"https://api.dicebear.com/7.x/shapes/svg?seed=product-{{@index}}\",\n    \"description\": \"{{faker 'commerce.productDescription'}}\",\n    \"category\": \"{{faker 'commerce.department'}}\",\n    \"brand\": \"{{faker 'company.name'}}\",\n    \"price\": \"{{faker 'commerce.price'}}\",\n    \"rating\": \"{{faker 'string.numeric' 1}}\",\n    \"stock\": \"{{faker 'string.numeric' 3}}\",\n    \"sku\": \"SKU-{{faker 'string.alphanumeric' 8}}\",\n    \"createdAt\": \"{{now}}\"\n  }{{#unless @last}},{{/unless}}\n  {{/repeat}}\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "578fa45d-a8c8-4c53-9225-793f02f393f3",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/product/:id",
+      "responses": [
+        {
+          "uuid": "4fb0a805-0d62-4ac1-b60a-19b0095d5666",
+          "body": "{\n  \"id\": \"{{urlParam 'id'}}\",\n  \"name\": \"{{faker 'commerce.productName'}} #{{urlParam 'id'}}\",\n  \"image\": \"https://api.dicebear.com/7.x/shapes/svg?seed=product-{{urlParam 'id'}}\",\n  \"description\": \"{{faker 'commerce.productDescription'}}\",\n  \"category\": \"{{faker 'commerce.department'}}\",\n  \"brand\": \"{{faker 'company.name'}}\",\n  \"price\": \"{{faker 'commerce.price'}}\",\n  \"rating\": \"{{faker 'string.numeric' 1}}\",\n  \"stock\": \"{{faker 'string.numeric' 3}}\",\n  \"sku\": \"SKU-{{urlParam 'id'}}\",\n  \"createdAt\": \"{{now}}\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "dc1a71bb-f66a-4ecc-86bd-9c59a9648b9e"
+    },
+    {
+      "type": "route",
+      "uuid": "039de933-fb1a-4d7a-96f2-3517d1a6849e"
+    },
+    {
+      "type": "route",
+      "uuid": "3163aaef-0d87-4a52-8688-7f82c46fdd99"
+    },
+    {
+      "type": "route",
+      "uuid": "578fa45d-a8c8-4c53-9225-793f02f393f3"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}

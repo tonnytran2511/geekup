@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - mock-api
+    environment:
+      - API_BASE_URL=http://mock-api:3001
+    networks:
+      - app-network
+
+  mock-api:
+    image: mockoon/cli:latest
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./mockoon-data.json:/data/mockoon-data.json:ro
+    command: --data /data/mockoon-data.json --port 3001
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
